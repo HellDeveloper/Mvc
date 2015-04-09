@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Framework.Internal;
+using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Mvc.Razor
@@ -42,6 +43,8 @@ namespace Microsoft.AspNet.Mvc.Razor
         private readonly IRazorViewFactory _viewFactory;
         private readonly IList<IViewLocationExpander> _viewLocationExpanders;
         private readonly IViewLocationCache _viewLocationCache;
+        private readonly ILogger _logger;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RazorViewEngine" /> class.
@@ -50,12 +53,14 @@ namespace Microsoft.AspNet.Mvc.Razor
         public RazorViewEngine(IRazorPageFactory pageFactory,
                                IRazorViewFactory viewFactory,
                                IOptions<RazorViewEngineOptions> optionsAccessor,
-                               IViewLocationCache viewLocationCache)
+                               IViewLocationCache viewLocationCache,
+                               ILoggerFactory loggerFactory)
         {
             _pageFactory = pageFactory;
             _viewFactory = viewFactory;
             _viewLocationExpanders = optionsAccessor.Options.ViewLocationExpanders;
             _viewLocationCache = viewLocationCache;
+            _logger = loggerFactory.CreateLogger<RazorViewEngine>();
         }
 
         /// <summary>
@@ -290,10 +295,20 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             if (result.SearchedLocations != null)
             {
+                _logger.LogVerbose("The view '{ViewName}' was not found.", result.Name);
+                
+                //TODO: figure how to log the array 'SearchedLocations'
+
                 return ViewEngineResult.NotFound(result.Name, result.SearchedLocations);
             }
 
             var view = razorViewFactory.GetView(this, result.Page, isPartial);
+
+            _logger.LogInformation("The view '{ViewName}' was found successfully.", result.Name);
+
+            //TODO: figure how to log the value for isPartial
+            //Should we have separate log statements when its a regular/partial view.
+
             return ViewEngineResult.Found(result.Name, view);
         }
 
