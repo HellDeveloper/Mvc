@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.AspNet.JsonPatch.Exceptions;
@@ -77,6 +78,49 @@ namespace Microsoft.AspNet.JsonPatch.Test
 
         [Fact]
         public void AddToListWithSerialization()
+        {
+            // Arrange
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Add<int>(o => o.IntegerList, 4, 0);
+
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
+
+            // Act
+            deserialized.ApplyTo(doc);
+
+            // Assert
+            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.IntegerList);
+        }
+
+        [Fact]
+        public void AddToArray()
+        {
+            // Arrange
+            var doc = new SimpleDTO()
+            {
+                IntegerArray = new List<int>() { 1,2,3}
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Add<int>(o => (List<int>)o.IntegerArray, 4, 0);
+
+            // Act
+            patchDoc.ApplyTo(doc);
+
+            // Assert
+            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.IntegerArray);
+        }
+
+        [Fact]
+        public void AddToArrayWithSerialization()
         {
             // Arrange
             var doc = new SimpleDTO()

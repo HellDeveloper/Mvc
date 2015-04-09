@@ -9,6 +9,7 @@ using Microsoft.AspNet.JsonPatch.Helpers;
 using Microsoft.AspNet.JsonPatch.Operations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
 
 namespace Microsoft.AspNet.JsonPatch.Adapters
 {
@@ -638,9 +639,22 @@ namespace Microsoft.AspNet.JsonPatch.Adapters
 
         private bool IsNonStringArray(JsonPatchProperty patchProperty)
         {
+            var jsonPropertyType = patchProperty.Property.PropertyType.GetTypeInfo();
+
+            if (jsonPropertyType.IsGenericType)
+            {
+                var genericArguments = jsonPropertyType.GetGenericArguments();
+                if (genericArguments.Length != 1)
+                {
+                    return false;
+                }
+                var listType = typeof(IList<>).MakeGenericType(genericArguments);
+                return listType.GetTypeInfo().IsAssignableFrom(jsonPropertyType);
+            }
+
             return !(patchProperty.Property.PropertyType == typeof(string))
                     && typeof(IList).GetTypeInfo().IsAssignableFrom(
-                        patchProperty.Property.PropertyType.GetTypeInfo());
+                        jsonPropertyType);
         }
 
         private void CheckIfPropertyCanBeSet(
