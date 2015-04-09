@@ -213,7 +213,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Metadata
         {
             foreach (var attribute in context.Attributes.OfType<ValidationAttribute>())
             {
-                context.ValidationMetadata.ValiatorMetadata.Add(attribute);
+                context.ValidationMetadata.ValidatorMetadata.Add(attribute);
             }
         }
 

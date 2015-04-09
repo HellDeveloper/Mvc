@@ -118,7 +118,7 @@ namespace Microsoft.AspNet.Mvc
         /// <summary>
         /// Gets a list of <see cref="IClientModelValidatorProvider"/> instances.
         /// </summary>
-        public IList<IClientModelValidatorProvider> ClientModelValidatorProviders { get; set; }
+        public IList<IClientModelValidatorProvider> ClientModelValidatorProviders { get; }
 
         /// <summary>
         /// Gets a list of descriptors that represent <see cref="Rendering.IViewEngine"/> used

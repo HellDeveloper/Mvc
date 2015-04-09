@@ -17,12 +17,12 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Metadata
         {
             foreach (var attribute in context.Attributes.OfType<IModelValidator>())
             {
-                context.ValidationMetadata.ValiatorMetadata.Add(attribute);
+                context.ValidationMetadata.ValidatorMetadata.Add(attribute);
             }
 
             foreach (var attribute in context.Attributes.OfType<IClientModelValidator>())
             {
-                context.ValidationMetadata.ValiatorMetadata.Add(attribute);
+                context.ValidationMetadata.ValidatorMetadata.Add(attribute);
             }
         }
     }
